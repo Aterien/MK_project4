@@ -26,6 +26,20 @@ def wspolne_stacje(df_list):
         wsp = wsp.intersection(df.columns)
     return wsp
 
+def download_metadata(gios_archive_url,metadata_url_id):
+    # Pobranie metadanych
+    url = f"{gios_archive_url}{metadata_url_id}"
+    response = requests.get(url)
+    response.raise_for_status()  # jeśli błąd HTTP, zatrzymaj
+
+    try:
+        df = pd.read_excel(io.BytesIO(response.content), header=None,engine='openpyxl')
+        return df
+    except Exception as e:
+        print(f"Błąd przy wczytywaniu metadanych: {e}")
+        return None
+
+
 def multiindex_funkcja(df, metadane, wsp_stacje):
     filt = metadane[metadane['Kod stacji'].isin(wsp_stacje)]
     tuples = list(zip(filt['Kod stacji'], filt['Miejscowość']))
