@@ -33,7 +33,7 @@ def download_metadata(gios_archive_url,metadata_url_id):
     response.raise_for_status()  # jeśli błąd HTTP, zatrzymaj
 
     try:
-        df = pd.read_excel(io.BytesIO(response.content), header=None,engine='openpyxl')
+        df = pd.read_excel(io.BytesIO(response.content),engine='openpyxl')
         return df
     except Exception as e:
         print(f"Błąd przy wczytywaniu metadanych: {e}")
