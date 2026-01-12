@@ -4,9 +4,18 @@ import zipfile
 import io
 
 gios_archive_url = "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/"
-gios_url_ids = {2015: 'XXX', 2018: 'YYY', 2021: 'ZZZ', 2024: '582'}  # podmień X/Y/Z na odpowiednie id
-gios_pm25_file = {2015: '2015_PM2.5_1g.xlsx', 2018: '2018_PM2.5_1g.xlsx',
-                  2021: '2021_PM2.5_1g.xlsx', 2024: '2024_PM25_1g.xlsx'}
+gios_url_ids = {
+    2015: 'XXX',  # podmień na właściwe ID
+    2018: 'YYY',
+    2021: 'ZZZ',
+    2024: '582'
+}
+gios_pm25_file = {
+    2015: '2015_PM2.5_1g.xlsx',
+    2018: '2018_PM2.5_1g.xlsx',
+    2021: '2021_PM2.5_1g.xlsx',
+    2024: '2024_PM25_1g.xlsx'
+}
 
 def download_gios_archive(year, gios_id, filename):
     response = requests.get(f"{gios_archive_url}{gios_id}")
@@ -40,15 +49,13 @@ def multiindex_funkcja(df, metadane, wsp_stacje):
 def przesun_date(df):
     df = df.copy()
     polnoc = df.index.hour == 0
-    nowy_indeks = pd.Series(df.index)
-    nowy_indeks[polnoc] = nowy_indeks[polnoc] - pd.Timedelta(days=1)
+    nowy_indeks = [t - pd.Timedelta(seconds=1) if h else t for t, h in zip(df.index, polnoc)]
     df.index = pd.DatetimeIndex(nowy_indeks)
     return df
 
-def przygotuj_df_gotowy(df_list, metadane):
+def df_gotowy(df_list, metadane):
     wsp_st = wspolne_stacje(df_list)
     df_list_wsp = [df[wsp_st] for df in df_list]
     df_list_multi = [multiindex_funkcja(df, metadane, wsp_st) for df in df_list_wsp]
     df_gotowe = [przesun_date(df) for df in df_list_multi]
     return pd.concat(df_gotowe)
-
