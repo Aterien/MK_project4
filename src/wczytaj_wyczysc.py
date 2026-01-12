@@ -5,9 +5,9 @@ import io
 
 gios_archive_url = "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/"
 gios_url_ids = {
-    2015: 'XXX',  # podmień na właściwe ID
-    2018: 'YYY',
-    2021: 'ZZZ',
+    2015: '236',
+    2018: '603',
+    2021: '486',
     2024: '582'
 }
 gios_pm25_file = {
