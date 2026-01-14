@@ -5,7 +5,7 @@ def srednie_miesieczne(df_pomiary):
     miesieczne_srednie.index.names = ['Rok','Miesiąc']
     return miesieczne_srednie
 
-def srednie_dla_miast(miesieczne_srednie, miasta=['Katowice','Warszawa']):
+def srednie_dla_miast(miesieczne_srednie, miasta):
     wynik = {}
     for miasto in miasta:
         df_miasto = miesieczne_srednie.loc[:, miesieczne_srednie.columns.get_level_values("Miejscowość") == miasto]
@@ -15,7 +15,7 @@ def srednie_dla_miast(miesieczne_srednie, miasta=['Katowice','Warszawa']):
 def srednie_po_stacjach(miesieczne_srednie):
     return miesieczne_srednie.groupby(level="Miejscowość", axis=1).mean()
 
-def dni_przekroczenia_normy(df_pomiary, norma_dobowa, years=[2015, 2018, 2021, 2024]):
+def dni_przekroczenia_normy(df_pomiary, norma_dobowa, years):
     dzienne_srednie = df_pomiary.groupby([df_pomiary.index.year, df_pomiary.index.month, df_pomiary.index.day]).mean()
     dzienne_srednie.index.names = ['Rok','Miesiąc','Dzień']
     ile_dni = pd.DataFrame(index=years, columns=dzienne_srednie.columns)
