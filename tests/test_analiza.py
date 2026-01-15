@@ -5,15 +5,32 @@ import os
 import pytest
 sys.path.append(os.path.join(os.getcwd(), "..", "src"))
 from analiza import *
+
+
 @pytest.fixture
 def przykladowy_df():
     dates = pd.date_range("2024-01-01", periods=6, freq="D")
-    data = {
-        ("Miejscowość", "Warszawa"): [10, 20, np.nan, 40, 50, 60],
-        ("Miejscowość", "Krakow"): [5, 15, 25, np.nan, 45, 55]
-    }
-    df = pd.DataFrame(data, index=dates)
+
+    columns = pd.MultiIndex.from_tuples( # Dodaję multiindex do testowego df'a
+        [
+            ("Stacja_Warszawa", "Warszawa"),
+            ("Stacja_Krakow", "Krakow"),
+        ],
+        names=["Kod stacji", "Miejscowość"]
+    )
+
+    data = [
+        [10, 5],
+        [20, 15],
+        [np.nan, 25],
+        [40, np.nan],
+        [50, 45],
+        [60, 55],
+    ]
+
+    df = pd.DataFrame(data, index=dates, columns=columns)
     return df
+
 
 def test_srednie_miesieczne(przykladowy_df):
     wynik = srednie_miesieczne(przykladowy_df)
@@ -38,8 +55,8 @@ def test_srednie_po_stacjach(przykladowy_df):
 def test_dni_przekroczenia_normy(przykladowy_df):
     norma = 30
     wyn = dni_przekroczenia_normy(przykladowy_df, norma_dobowa=norma, years=[2024])
-    assert wyn.loc[2024, ("Miejscowość", "Warszawa")] == 3  # dni > 30: 40,50,60
-    assert wyn.loc[2024, ("Miejscowość", "Krakow")] == 2    # dni > 30: 45,55
+    assert wyn.loc[2024, ("Stacja_Warszawa", "Warszawa")] == 3  # dni > 30: 40,50,60
+    assert wyn.loc[2024, ("Stacja_Krakow", "Krakow")] == 2    # dni > 30: 45,55
 
 def test_wybierz_stacje_max_min(przykladowy_df):
     norma = 30
