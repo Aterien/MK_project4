@@ -158,8 +158,6 @@ def test_df_gotowy_pipeline(raw_gios_df_1, raw_gios_df_2, metadata_df):
 
     data = df_gotowy(list(raw_data.values()), metadata_df)
 
-    # --- ASERCJE ---
-
     # wynik to DataFrame
     assert isinstance(data, pd.DataFrame)
 
