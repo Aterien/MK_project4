@@ -49,7 +49,7 @@ def ujednolic_dane(tabela,metadane):
     tabela = tabela.rename(columns={"Kod stacji": "Data poboru danych"})
     tabela = tabela.set_index('Data poboru danych')
     tabela = zaktualizuj_nazwy_stacji(tabela,metadane)
-    return tabela
+    return tabela 
 
 def wspolne_stacje(df_list):
     wsp = df_list[0].columns
