@@ -3,7 +3,34 @@ import numpy as np
 import pandas as pd
 
 def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:list[str]) -> None:
+    """
+    Rysuje wykres porównujący średnie miesięczne stężenia PM2.5
+    dla wybranych miast i lat.
 
+    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_stacjach,
+    w którym:
+    - indeks wierszy jest dwupoziomowy: (Rok, Miesiąc),
+    - kolumny odpowiadają miejscowościom.
+
+    Na jednym wykresie rysowane są łamane linie przedstawiające
+    zmiany średnich miesięcznych wartości PM2.5 w kolejnych miesiącach,
+    osobno dla każdej kombinacji miasta i roku.
+
+    Parameters
+    ----------
+    srednie_miast : pandas.DataFrame
+        DataFrame ze średnimi miesięcznymi PM2.5 zagregowanymi
+        po miejscowościach (wynik funkcji srednie_po_stacjach).
+    lata : list of int
+        Lista lat, które mają zostać uwzględnione na wykresie.
+    miasta : list of str
+        Lista nazw miejscowości, dla których mają zostać narysowane wykresy.
+
+    Returns
+    -------
+    None
+        Funkcja wyświetla wykres i nie zwraca żadnej wartości.
+    """
     plt.figure(figsize=(12,8))
 
     for miasto in miasta:
@@ -21,6 +48,36 @@ def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:l
     plt.show()
 
 def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) -> None:
+    """
+    Rysuje zestaw wykresów typu heatmap przedstawiających
+    średnie miesięczne stężenia PM2.5 dla wszystkich miejscowości.
+
+    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_stacjach,
+    w którym:
+    - indeks wierszy ma dwa poziomy: (Rok, Miesiąc),
+    - kolumny odpowiadają poszczególnym miejscowościom.
+
+    Dla każdej miejscowości generowany jest osobny wykres heatmapy,
+    gdzie:
+    - oś X odpowiada miesiącom,
+    - oś Y odpowiada latom,
+    - kolor reprezentuje wartość średniego stężenia PM2.5.
+
+    Wykresy są ułożone w macierzy 3 × m, gdzie m zależy od liczby miejscowości.
+
+    Parameters
+    ----------
+    srednie_po_miejscach : pandas.DataFrame
+        DataFrame ze średnimi miesięcznymi PM2.5 zagregowanymi
+        po miejscowościach (wynik funkcji srednie_po_stacjach).
+    lata : list of int
+        Lista lat uwzględnianych na wykresach.
+
+    Returns
+    -------
+    None
+        Funkcja wyświetla zestaw wykresów heatmap i nie zwraca żadnej wartości.
+    """
     miejscowosci = srednie_po_miejscach.columns.to_list()
     fig, axes = plt.subplots((len(miejscowosci)+2)//3, 3, figsize=(15, 20))
     fig.suptitle("Średnie miesięczne stężenie PM2.5 we wszystkich miejscowościach", fontsize=20)
@@ -43,7 +100,36 @@ def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) ->
     fig.tight_layout(rect=[0, 0, 1, 0.98])
     plt.show()
 
-def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:list, lata:list[int], norma_dobowa:float) -> None:
+def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:list[str], lata:list[int], norma_dobowa:float) -> None:
+    """
+    Rysuje wykres słupkowy liczby dni z przekroczeniem normy PM2.5
+    dla wybranych stacji i lat.
+
+    Funkcja przyjmuje DataFrame będący wycinkiem wyniku funkcji
+    dni_przekroczenia_normy (tj. dni_wiecej_normy[wybrane_stacje]).
+    Na wykresie:
+    - oś X - stacje pomiarowe,
+    - oś Y przedstawia liczbę dni z przekroczeniem normy,
+    - słupki są pogrupowane według lat.
+
+    Parameters
+    ----------
+    ile_dni_wybrane_stacje : pandas.DataFrame
+        DataFrame z liczbą dni przekroczeń normy PM2.5
+        dla wybranych stacji i lat.
+    wybrane_stacje : list
+        Lista wybranych stacji (np. wynik funkcji wybierz_stacje_max_min).
+    lata : list of int
+        Lista lat, dla których rysowane są słupki.
+    norma_dobowa : float
+        Wartość dobowej normy PM2.5 użytej do obliczeń,
+        wyświetlana w tytule wykresu.
+
+    Returns
+    -------
+    None
+        Funkcja wyświetla wykres słupkowy i nie zwraca żadnej wartości.
+    """
     x = np.arange(len(wybrane_stacje))
     width = 0.2
     plt.figure(figsize=(10,6))
@@ -54,5 +140,6 @@ def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:lis
     plt.xticks(x, [stacja[0] for stacja in wybrane_stacje], rotation=30)
     plt.ylabel('Liczba dni z przekroczeniem normy PM2.5')
     plt.xlabel('Stacja')
+    plt.legend()
     plt.title(f"Liczba dni z przekroczeniem normy dobowej = {norma_dobowa} µg/m³")
     plt.grid(True)
