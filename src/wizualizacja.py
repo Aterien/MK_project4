@@ -2,18 +2,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int]) -> None:
-    kat = srednie_miast['Katowice']
-    wwa = srednie_miast['Warszawa']
+def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:list[str]) -> None:
+
     plt.figure(figsize=(12,8))
-    plt.plot(kat.xs(lata[0], level='Rok').index, kat.xs(lata[0], level='Rok').values,
-             marker='*', color='pink', label=f'Katowice {lata[0]}')
-    plt.plot(kat.xs(lata[1], level='Rok').index, kat.xs(lata[1], level='Rok').values,
-             marker='*', color='plum', label=f'Katowice {lata[1]}')
-    plt.plot(wwa.xs(lata[0], level='Rok').index, wwa.xs(lata[0], level='Rok').values,
-             marker='*', color='purple', label=f'Warszawa {lata[0]}')
-    plt.plot(wwa.xs(lata[1], level='Rok').index, wwa.xs(lata[1], level='Rok').values,
-             marker='*', color='navy', label=f'Warszawa {lata[1]}')
+
+    for miasto in miasta:
+        m = srednie_miast[miasto]
+        for rok in lata:
+            plt.plot(m.xs(rok, level='Rok').index, m.xs(rok, level='Rok').values,
+             marker='*', label=f'{miasto} {rok}')
+
     plt.xlabel('Miesiąc')
     plt.ylabel('Średnia wartość PM2.5')
     plt.title('Średnie miesięczne stężenie PM2.5 w Katowicach i Warszawie')
