@@ -2,8 +2,8 @@ import pandas as pd
 import requests
 import zipfile
 import io
-import pytest
-def download_gios_archive(gios_archive_url, gios_id, filename):
+
+def download_gios_archive(gios_archive_url:str, gios_id:str, filename:str) -> pd.DataFrame:
     response = requests.get(f"{gios_archive_url}{gios_id}")
     response.raise_for_status()
     with zipfile.ZipFile(io.BytesIO(response.content)) as z:
@@ -11,7 +11,7 @@ def download_gios_archive(gios_archive_url, gios_id, filename):
             df = pd.read_excel(f, header=None)
     return df
 
-def download_metadata(gios_archive_url,metadata_url_id):
+def download_metadata(gios_archive_url:str,metadata_url_id:str) -> pd.DataFrame:
     # Pobranie metadanych
     url = f"{gios_archive_url}{metadata_url_id}"
     response = requests.get(url)
@@ -24,7 +24,7 @@ def download_metadata(gios_archive_url,metadata_url_id):
         print(f"Błąd przy wczytywaniu metadanych: {e}")
         return None
 
-def zaktualizuj_nazwy_stacji(df,metadane):
+def zaktualizuj_nazwy_stacji(df:pd.DataFrame, metadane:pd.DataFrame) -> pd.DataFrame:
     # Teraz chcę zmienić kody stacji, tak aby były aktualne na podstawie pliku metadane:
     # Tworzę słownik kodów- będzie działał na zasadzie stary kod: nowy kod.
     # W ten sposób mogę potem łatwo aktualizować kody stacji.
@@ -41,7 +41,7 @@ def zaktualizuj_nazwy_stacji(df,metadane):
     df.rename(columns=slownik_kodow, inplace=True)
     return df
 
-def ujednolic_dane(tabela,metadane):
+def ujednolic_dane(tabela:pd.DataFrame, metadane:pd.DataFrame) -> pd.DataFrame:
     tabela = tabela.copy()
     tabela = tabela[~tabela.iloc[:,0].isin(['Wskaźnik','Czas uśredniania','Jednostka', 'Kod stanowiska', 'Nr'])]
     tabela.columns = tabela.iloc[0]
@@ -51,19 +51,19 @@ def ujednolic_dane(tabela,metadane):
     tabela = zaktualizuj_nazwy_stacji(tabela,metadane)
     return tabela 
 
-def wspolne_stacje(df_list):
+def wspolne_stacje(df_list:list[pd.DataFrame]) -> pd.Index:
     wsp = df_list[0].columns
     for df in df_list[1:]:
         wsp = wsp.intersection(df.columns)
     return wsp
 
-def multiindex_funkcja(df, metadane, wsp_stacje):
+def multiindex_funkcja(df:pd.DataFrame, metadane:pd.DataFrame, wsp_stacje:pd.Index) -> pd.DataFrame:
     filt = metadane[metadane['Kod stacji'].isin(wsp_stacje)]
     tuples = list(zip(filt['Kod stacji'], filt['Miejscowość']))
     df.columns = pd.MultiIndex.from_tuples(tuples, names=("Kod stacji", "Miejscowość"))
     return df
 
-def przesun_date(df):
+def przesun_date(df:pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     df.index = pd.to_datetime(df.index, errors="coerce",format="%Y-%m-%d %H:%M:%S")
     polnoc = df.index.hour == 0
@@ -71,7 +71,7 @@ def przesun_date(df):
     df.index = pd.DatetimeIndex(nowy_indeks)
     return df
 
-def df_gotowy(raw_df_dict, metadane):
+def df_gotowy(raw_df_dict:dict[int:pd.DataFrame], metadane:pd.DataFrame) -> pd.DataFrame:
     """raw_df_dict - slownik z surowyni df {rok: df}"""
 
     # sprowadzam slownik raw_data {rok:df} do listy [df] i ujednolicam każdy df

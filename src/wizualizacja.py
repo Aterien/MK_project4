@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def wykres_porownanie_miast(srednie_miast, lata=[2015,2024]):
+def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int]) -> None:
     kat = srednie_miast['Katowice']
     wwa = srednie_miast['Warszawa']
     plt.figure(figsize=(12,8))
@@ -22,7 +22,7 @@ def wykres_porownanie_miast(srednie_miast, lata=[2015,2024]):
     plt.legend()
     plt.show()
 
-def wykres_heatmap_srednie(df_pomiary, srednie_po_miejscach, lata=[2015,2018,2021,2024]):
+def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) -> None:
     miejscowosci = srednie_po_miejscach.columns.to_list()
     fig, axes = plt.subplots((len(miejscowosci)+2)//3, 3, figsize=(15, 20))
     fig.suptitle("Średnie miesięczne stężenie PM2.5 we wszystkich miejscowościach", fontsize=20)
@@ -45,7 +45,7 @@ def wykres_heatmap_srednie(df_pomiary, srednie_po_miejscach, lata=[2015,2018,202
     fig.tight_layout(rect=[0, 0, 1, 0.98])
     plt.show()
 
-def wykres_przekroczenia(ile_dni_wybrane_stacje, wybrane_stacje, lata=[2015,2018,2021,2024], norma_dobowa=25):
+def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:list, lata:list[int], norma_dobowa:float) -> None:
     x = np.arange(len(wybrane_stacje))
     width = 0.2
     plt.figure(figsize=(10,6))

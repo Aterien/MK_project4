@@ -1,6 +1,6 @@
 import pandas as pd
 
-def srednie_miesieczne(df):
+def srednie_miesieczne(df:pd.DataFrame) -> pd.DataFrame:
     df_pomiary = df.copy()
     df_pomiary = df_pomiary.apply(pd.to_numeric, errors="coerce")
     
@@ -8,15 +8,15 @@ def srednie_miesieczne(df):
     miesieczne_srednie.index.names = ['Rok','Miesiąc']
     return miesieczne_srednie
 
-def srednie_dla_miast(miesieczne_srednie, miasto):
+def srednie_dla_miast(miesieczne_srednie:pd.DataFrame, miasto:str) -> pd.DataFrame:
     sr_miasto = miesieczne_srednie.loc[:, miesieczne_srednie.columns.get_level_values("Miejscowość") == miasto]
     sr_miasto = sr_miasto.mean(axis=1)
     return sr_miasto 
 
-def srednie_po_stacjach(miesieczne_srednie):
+def srednie_po_stacjach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
     return miesieczne_srednie.groupby(level="Miejscowość", axis=1).mean()
 
-def dni_przekroczenia_normy(df_pomiary, norma_dobowa, years=[2015, 2018, 2021, 2024]):
+def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:list[int]) -> pd.DataFrame:
     #wymuszam wartości liczbowe, NaN dla niepoprawnych
     df_numeric = df_pomiary.apply(pd.to_numeric, errors="coerce")
     dzienne_srednie = (
@@ -38,7 +38,7 @@ def dni_przekroczenia_normy(df_pomiary, norma_dobowa, years=[2015, 2018, 2021, 2
     return ile_dni
 
 
-def wybierz_stacje_max_min(ile_dni_wiecej_normy, rok, ile_maxmin=3):
+def wybierz_stacje_max_min(ile_dni_wiecej_normy:pd.DataFrame, rok:int, ile_maxmin=3) -> (list, pd.DataFrame):
     max3 = ile_dni_wiecej_normy.loc[rok].sort_values(ascending=False).head(ile_maxmin)
     min3 = ile_dni_wiecej_normy.loc[rok].sort_values(ascending=False).tail(ile_maxmin)
     wybrane_stacje = max3.index.tolist() + min3.index.tolist()
