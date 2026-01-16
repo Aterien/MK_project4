@@ -1,6 +1,30 @@
 import pandas as pd
 
 def srednie_miesieczne(df:pd.DataFrame) -> pd.DataFrame:
+    """
+    Oblicza średnie miesięczne stężenia PM2.5 dla każdej stacji pomiarowej.
+
+    Funkcja działa na gotowym DataFrame otrzymanym za pomocą funkcji df_gotowy.
+    Dane są grupowane według roku i miesiąca na podstawie indeksu czasowego,
+    a następnie liczona jest średnia wartość dla każdego miesiąca.
+
+    Wynikowy DataFrame posiada:
+    - dwupoziomowy indeks wierszy: (Rok, Miesiąc),
+    - dwupoziomowy indeks kolumn: (Kod stacji, Miejscowość).
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        Gotowy DataFrame z danymi pomiarowymi PM2.5,
+        z indeksem czasowym oraz kolumnami w postaci MultiIndex
+        (Kod stacji, Miejscowość).
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame zawierający średnie miesięczne wartości PM2.5
+        dla każdej stacji i miejscowości.
+    """
     df_pomiary = df.copy()
     df_pomiary = df_pomiary.apply(pd.to_numeric, errors="coerce")
     
@@ -9,14 +33,84 @@ def srednie_miesieczne(df:pd.DataFrame) -> pd.DataFrame:
     return miesieczne_srednie
 
 def srednie_dla_miast(miesieczne_srednie:pd.DataFrame, miasto:str) -> pd.DataFrame:
+    """
+    Oblicza średnie miesięczne stężenia PM2.5 dla wybranej miejscowości.
+
+    Funkcja przyjmuje DataFrame ze średnimi miesięcznymi (wynik funkcji
+    srednie_miesieczne) i agreguje dane po wszystkich stacjach
+    znajdujących się w danej miejscowości.
+
+    Parameters
+    ----------
+    miesieczne_srednie : pandas.DataFrame
+        DataFrame ze średnimi miesięcznymi PM2.5, z dwupoziomowym
+        indeksem kolumn (Kod stacji, Miejscowość).
+    miasto : str
+        Nazwa miejscowości, dla której mają zostać obliczone średnie wartości.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Jednokolumnowy DataFrame (Series w postaci DataFrame),
+        w którym indeks stanowią (Rok, Miesiąc),
+        a wartościami są średnie PM2.5 dla całej miejscowości.
+    """
     sr_miasto = miesieczne_srednie.loc[:, miesieczne_srednie.columns.get_level_values("Miejscowość") == miasto]
     sr_miasto = sr_miasto.mean(axis=1)
     return sr_miasto 
 
 def srednie_po_stacjach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
+    """
+    Oblicza średnie miesięczne stężenia PM2.5 zagregowane po miejscowościach.
+
+    Funkcja przyjmuje DataFrame ze średnimi miesięcznymi (wynik funkcji
+    srednie_miesieczne) i uśrednia wartości dla stacji należących
+    do tej samej miejscowości.
+
+    Parameters
+    ----------
+    miesieczne_srednie : pandas.DataFrame
+        DataFrame ze średnimi miesięcznymi PM2.5,
+        z dwupoziomowym indeksem kolumn (Kod stacji, Miejscowość).
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame, w którym kolumny odpowiadają miejscowościom,
+        a wartości są średnimi PM2.5 dla danej miejscowości
+        w poszczególnych miesiącach i latach.
+    """
     return miesieczne_srednie.groupby(level="Miejscowość", axis=1).mean()
 
 def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:list[int]) -> pd.DataFrame:
+    """
+        Zlicza liczbę dni z przekroczeniem dobowej normy PM2.5 dla każdej stacji.
+
+        Funkcja działa na gotowym DataFrame otrzymanym za pomocą funkcji df_gotowy.
+        Najpierw obliczane są średnie dobowe, a następnie dla każdego roku
+        zliczana jest liczba dni, w których średnia dobowa przekroczyła
+        zadany próg normy.
+
+        Parameters
+        ----------
+        df_pomiary : pandas.DataFrame
+            Gotowy DataFrame z danymi pomiarowymi PM2.5,
+            z indeksem czasowym oraz kolumnami w postaci MultiIndex
+            (Kod stacji, Miejscowość).
+        norma_dobowa : float
+            Wartość dobowej normy PM2.5, powyżej której dzień
+            uznawany jest za przekroczenie normy.
+        years : list of int
+            Lista lat, dla których ma zostać wykonane zliczanie przekroczeń.
+
+        Returns
+        -------
+        pandas.DataFrame
+            DataFrame, w którym:
+            - wiersze odpowiadają latom,
+            - kolumny to stacje (Kod stacji, Miejscowość),
+            - wartości to liczba dni z przekroczeniem normy w danym roku.
+        """
     #wymuszam wartości liczbowe, NaN dla niepoprawnych
     df_numeric = df_pomiary.apply(pd.to_numeric, errors="coerce")
     dzienne_srednie = (
@@ -39,6 +133,28 @@ def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:l
 
 
 def wybierz_stacje_max_min(ile_dni_wiecej_normy:pd.DataFrame, rok:int, ile_maxmin=3) -> (list, pd.DataFrame):
+    """
+    Wybiera stacje z największą i najmniejszą liczbą dni z przekroczeniem normy.
+
+    Funkcja działa na wyniku funkcji dni_przekroczenia_normy.
+
+    Parameters
+    ----------
+    ile_dni_wiecej_normy : pandas.DataFrame
+        DataFrame zwrócony przez funkcję dni_przekroczenia_normy.
+    rok : int
+        Rok, dla którego mają zostać wybrane stacje.
+    ile_maxmin : int, optional
+        Liczba stacji wybieranych z maksimum i minimum przekroczeń
+        (domyślnie 3).
+
+    Returns
+    -------
+    tuple
+        Krotka zawierająca:
+        - listę wybranych stacji (kody stacji z miejscowością),
+        - DataFrame ograniczony do wybranych stacji.
+    """
     max3 = ile_dni_wiecej_normy.loc[rok].sort_values(ascending=False).head(ile_maxmin)
     min3 = ile_dni_wiecej_normy.loc[rok].sort_values(ascending=False).tail(ile_maxmin)
     wybrane_stacje = max3.index.tolist() + min3.index.tolist()
