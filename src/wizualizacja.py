@@ -158,12 +158,12 @@ def plot_exceedence_by_voivodeship(df: pd.DataFrame, daily_norm: float) -> None:
     """
 
     ax = df.plot(kind="bar", figsize=(14, 7))
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Number of exceedance days")
-    ax.set_title(f"Days with PM2.5 above daily norm = {daily_norm} ug/m3 grouped by voivodeship")
+    ax.set_xlabel("Rok")
+    ax.set_ylabel("Liczba dni z przekroczeniami")
+    ax.set_title(f"Dni z PM2.5 powyżej normy dziennej = {daily_norm} ug/m3 pogrupowane względem województw")
     ax.grid(True, axis="y")
 
-    plt.legend(title="Voivodeship", bbox_to_anchor=(1.05, 1), loc="upper left")
+    plt.legend(title="Województwo", bbox_to_anchor=(1.05, 1), loc="upper left")
     plt.xticks(rotation=0)
     plt.tight_layout()
     plt.show()
