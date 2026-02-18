@@ -131,7 +131,6 @@ def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:l
             ile_dni.loc[year] = 0 #jesli brak danych 
     return ile_dni
 
-
 def wybierz_stacje_max_min(ile_dni_wiecej_normy:pd.DataFrame, rok:int, ile_maxmin=3) -> (list, pd.DataFrame):
     """
     Wybiera stacje z największą i najmniejszą liczbą dni z przekroczeniem normy.

@@ -1,0 +1,20 @@
+#Ustawienia PM 2.5
+pm25_data_link: "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/" #link do strony archiwum
+
+metadata_id: "622"
+pm25_daily limit: "25" #Wartość dobowej normy PM2.5, powyżej której dzień uznawany jest za przekroczenie normy
+
+years:
+  2015:
+    archive_id: "236"
+    filename: "2015_PM25_1g.xlsx"
+  2018:
+    archive_id: "603"
+    filename: "2018_PM25_1g.xlsx"
+  2021:
+    archive_id: "486"
+    filename: "2021_PM25_1g.xlsx"
+  2024:
+    archive_id: "582"
+    filename: "2024_PM25_1g.xlsx"
+

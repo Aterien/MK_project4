@@ -1,0 +1,49 @@
+configfile: "workflows/config.yaml"
+
+YEARS = list(config["years"].keys())
+
+
+rule all:
+    input:
+        "data/raw/metadata.xlsx",
+        expand("data/raw/pm25_{year}.xlsx", year=YEARS)
+
+
+rule download_metadata:
+    """
+    Downloads station metadata from GIOS archive.
+    Output is reused by all per-year analysis rules.
+    """
+    output:
+        "data/raw/metadata.xlsx"
+    script:
+        "../src/pm25/download_metadata.py"
+
+
+rule download_year:
+    """
+    Downloads raw PM2.5 hourly data for a single year.
+    Year is passed via wildcard; archive id and filename
+    are looked up from config.yaml.
+    """
+    output:
+        "data/raw/pm25_{year}.xlsx"
+    wildcard_constraints:
+        year="|".join(str(y) for y in YEARS)
+    script:
+        "../src/pm25/download_year.py"
+
+rule pm25_year:
+    """
+    Czyszczenie, analiza i wizualizacja danych
+    """
+    input:
+        "data/raw/pm25_{year}.xlsx",
+        "data/raw/metadata.xlsx"
+    output:
+        "results/pm25/{year}/"
+
+    script:
+        "../src/pm25/run_pm25_year.py"
+        "../src/pm25/run_pm25_year.py"
+
