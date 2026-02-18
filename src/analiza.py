@@ -32,6 +32,7 @@ def srednie_miesieczne(df:pd.DataFrame) -> pd.DataFrame:
     miesieczne_srednie.index.names = ['Rok','Miesiąc']
     return miesieczne_srednie
 
+
 def srednie_dla_miast(miesieczne_srednie:pd.DataFrame, miasto:str) -> pd.DataFrame:
     """
     Oblicza średnie miesięczne stężenia PM2.5 dla wybranej miejscowości.
@@ -59,7 +60,8 @@ def srednie_dla_miast(miesieczne_srednie:pd.DataFrame, miasto:str) -> pd.DataFra
     sr_miasto = sr_miasto.mean(axis=1)
     return sr_miasto 
 
-def srednie_po_stacjach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
+
+def srednie_po_miastach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
     """
     Oblicza średnie miesięczne stężenia PM2.5 zagregowane po miejscowościach.
 
@@ -81,6 +83,7 @@ def srednie_po_stacjach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
         w poszczególnych miesiącach i latach.
     """
     return miesieczne_srednie.groupby(level="Miejscowość", axis=1).mean()
+
 
 def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:list[int]) -> pd.DataFrame:
     """
@@ -131,6 +134,7 @@ def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:l
             ile_dni.loc[year] = 0 #jesli brak danych 
     return ile_dni
 
+
 def wybierz_stacje_max_min(ile_dni_wiecej_normy:pd.DataFrame, rok:int, ile_maxmin=3) -> (list, pd.DataFrame):
     """
     Wybiera stacje z największą i najmniejszą liczbą dni z przekroczeniem normy.
@@ -158,6 +162,7 @@ def wybierz_stacje_max_min(ile_dni_wiecej_normy:pd.DataFrame, rok:int, ile_maxmi
     min3 = ile_dni_wiecej_normy.loc[rok].sort_values(ascending=False).tail(ile_maxmin)
     wybrane_stacje = max3.index.tolist() + min3.index.tolist()
     return wybrane_stacje, ile_dni_wiecej_normy[wybrane_stacje]
+
 
 def overnorm_by_voivodeship(
         df: pd.DataFrame,

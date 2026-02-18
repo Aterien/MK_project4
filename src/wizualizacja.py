@@ -7,7 +7,7 @@ def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:l
     Rysuje wykres porównujący średnie miesięczne stężenia PM2.5
     dla wybranych miast i lat.
 
-    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_stacjach,
+    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_miastach,
     w którym:
     - indeks wierszy jest dwupoziomowy: (Rok, Miesiąc),
     - kolumny odpowiadają miejscowościom.
@@ -20,7 +20,7 @@ def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:l
     ----------
     srednie_miast : pandas.DataFrame
         DataFrame ze średnimi miesięcznymi PM2.5 zagregowanymi
-        po miejscowościach (wynik funkcji srednie_po_stacjach).
+        po miejscowościach (wynik funkcji srednie_po_miastach).
     lata : list of int
         Lista lat, które mają zostać uwzględnione na wykresie.
     miasta : list of str
@@ -52,7 +52,7 @@ def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) ->
     Rysuje zestaw wykresów typu heatmap przedstawiających
     średnie miesięczne stężenia PM2.5 dla wszystkich miejscowości.
 
-    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_stacjach,
+    Funkcja przyjmuje DataFrame otrzymany z funkcji srednie_po_miastach,
     w którym:
     - indeks wierszy ma dwa poziomy: (Rok, Miesiąc),
     - kolumny odpowiadają poszczególnym miejscowościom.
@@ -69,7 +69,7 @@ def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) ->
     ----------
     srednie_po_miejscach : pandas.DataFrame
         DataFrame ze średnimi miesięcznymi PM2.5 zagregowanymi
-        po miejscowościach (wynik funkcji srednie_po_stacjach).
+        po miejscowościach (wynik funkcji srednie_po_miastach).
     lata : list of int
         Lista lat uwzględnianych na wykresach.
 

@@ -8,9 +8,13 @@ __pycache__/
 # Jupyter checkpoints
 .ipynb_checkpoints/
 
+# Snakemake files
+.snakemake/
+
 # Environment files
 env/
 .venv/
 wyklady/
 data/
+results/
 
