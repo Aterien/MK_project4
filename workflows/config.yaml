@@ -2,7 +2,7 @@
 pm25_data_link: "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/" #link do strony archiwum
 
 metadata_id: "622"
-pm25_daily limit: "25" #Wartość dobowej normy PM2.5, powyżej której dzień uznawany jest za przekroczenie normy
+pm25_daily_limit: "15.0" #Wartość dobowej normy PM2.5, powyżej której dzień uznawany jest za przekroczenie normy
 
 years:
   2015:
@@ -17,4 +17,9 @@ years:
   2024:
     archive_id: "582"
     filename: "2024_PM25_1g.xlsx"
+
+cities:
+  - "Katowice"
+  - "Warszawa"
+  - "Kraków"
 

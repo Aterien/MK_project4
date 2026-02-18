@@ -6,7 +6,8 @@ YEARS = list(config["years"].keys())
 rule all:
     input:
         "data/raw/metadata.xlsx",
-        expand("data/raw/pm25_{year}.xlsx", year=YEARS)
+        expand("data/raw/pm25_{year}.xlsx", year=YEARS),
+        expand("results/pm25/{year}/monthly_means.csv", year=YEARS)
 
 
 rule download_metadata:
@@ -33,6 +34,7 @@ rule download_year:
     script:
         "../src/pm25/download_year.py"
 
+
 rule pm25_year:
     """
     Czyszczenie, analiza i wizualizacja danych
@@ -41,9 +43,12 @@ rule pm25_year:
         "data/raw/pm25_{year}.xlsx",
         "data/raw/metadata.xlsx"
     output:
-        "results/pm25/{year}/"
-
+        "results/pm25/{year}/monthly_means.csv",
+        "results/pm25/{year}/monthly_means_by_city.csv",
+        "results/pm25/{year}/exceedance_days_by_station.csv",
+        "results/pm25/{year}/top3_max_min_stations.csv",
+        "results/pm25/{year}/exceedance_days_by_voivodeship.csv"
+    wildcard_constraints:
+        year="|".join(str(y) for y in YEARS)
     script:
         "../src/pm25/run_pm25_year.py"
-        "../src/pm25/run_pm25_year.py"
-

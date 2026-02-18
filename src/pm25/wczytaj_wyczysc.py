@@ -239,6 +239,11 @@ def df_gotowy(raw_df_dict:dict[int:pd.DataFrame], metadane:pd.DataFrame) -> pd.D
         ujednolicone_df_list.append(ujednolic_dane(raw_df_dict[rok], metadane))
 
     wsp_st = wspolne_stacje(ujednolicone_df_list)
+
+    #
+    znane_stacje = set(metadane["Kod stacji"])
+    wsp_st = wsp_st[wsp_st.isin(znane_stacje)]
+
     df_list_wsp = [df[wsp_st] for df in ujednolicone_df_list]
     df_list_multi = [multiindex_funkcja(df, metadane, wsp_st) for df in df_list_wsp]
     df_gotowe = [przesun_date(df) for df in df_list_multi]
