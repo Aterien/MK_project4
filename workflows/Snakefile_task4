@@ -7,7 +7,11 @@ rule all:
     input:
         "data/raw/metadata.xlsx",
         expand("data/raw/pm25_{year}.xlsx", year=YEARS),
-        expand("results/pm25/{year}/monthly_means.csv", year=YEARS)
+        expand("results/pm25/{year}/monthly_means.csv", year=YEARS),
+        expand("results/pm25/{year}/monthly_means_by_city.csv", year=YEARS),
+        expand("results/pm25/{year}/exceedance_days_by_station.csv", year=YEARS),
+        expand("results/pm25/{year}/top3_max_min_stations.csv", year=YEARS),
+        expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS)
 
 
 rule download_metadata:
