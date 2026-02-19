@@ -102,7 +102,7 @@ def zaktualizuj_nazwy_stacji(df:pd.DataFrame, metadane:pd.DataFrame) -> pd.DataF
             # Starych kodów może być też kilka:
             stary_kod = stary_kod.split(",")
             for s in stary_kod:
-                slownik_kodow[s] = nowy_kod
+                slownik_kodow[s.strip()] = nowy_kod
 
     df.rename(columns=slownik_kodow, inplace=True)
     return df
@@ -239,10 +239,6 @@ def df_gotowy(raw_df_dict:dict[int:pd.DataFrame], metadane:pd.DataFrame) -> pd.D
         ujednolicone_df_list.append(ujednolic_dane(raw_df_dict[rok], metadane))
 
     wsp_st = wspolne_stacje(ujednolicone_df_list)
-
-    #
-    znane_stacje = set(metadane["Kod stacji"])
-    wsp_st = wsp_st[wsp_st.isin(znane_stacje)]
 
     df_list_wsp = [df[wsp_st] for df in ujednolicone_df_list]
     df_list_multi = [multiindex_funkcja(df, metadane, wsp_st) for df in df_list_wsp]
