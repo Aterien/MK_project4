@@ -1,9 +1,10 @@
-#Ustawienia PM 2.5
+# Ustawienia PM 2.5
 pm25_data_link: "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/" #link do strony archiwum
 
 metadata_id: "622"
 pm25_daily_limit: "15.0" #Wartość dobowej normy PM2.5, powyżej której dzień uznawany jest za przekroczenie normy
 
+#TODO komentarz jakis
 years:
   2015:
     archive_id: "236"
@@ -23,3 +24,10 @@ cities:
   - "Warszawa"
   - "Kraków"
 
+# Ustawienia przeglądu publikacji
+user_entrez_email: "m.khrabust@student.uw.edu.pl"
+user_api_key: "cf88f96a609dbbbaa42b355f2793394f2f08" # Może pozostać puste
+
+queries:
+  - "Lung cancer"
+  - "Dust particles"

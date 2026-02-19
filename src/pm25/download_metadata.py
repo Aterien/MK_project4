@@ -32,4 +32,4 @@ response.raise_for_status()
 with open(output_path, "wb") as out:
     out.write(response.content)
 
-print(f"[download_metadata] Metadane zapisane do {output_path}")
+print(f"[download_metadata] Metadane zapisane do {output_path}\n\n\n")

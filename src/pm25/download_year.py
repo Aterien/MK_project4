@@ -15,9 +15,6 @@ import requests
 import zipfile
 import io
 
-# Umożliwia import z src/pm25/
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
 year = int(snakemake.wildcards.year)
 config = snakemake.config
 
