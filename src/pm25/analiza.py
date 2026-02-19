@@ -82,7 +82,7 @@ def srednie_po_miastach(miesieczne_srednie:pd.DataFrame) -> pd.DataFrame:
         a wartości są średnimi PM2.5 dla danej miejscowości
         w poszczególnych miesiącach i latach.
     """
-    return miesieczne_srednie.groupby(level="Miejscowość", axis=1).mean()
+    return miesieczne_srednie.T.groupby(level="Miejscowość").mean().T
 
 
 def dni_przekroczenia_normy(df_pomiary:pd.DataFrame, norma_dobowa:float, years:list[int]) -> pd.DataFrame:
@@ -190,7 +190,7 @@ def overnorm_by_voivodeship(
     voiv = pd.Series(station_codes, index=exceed.columns).map(lambda s: station_to_voiv.get(s, "Unknown"))
     
     # dla każdego dnia i województwa sprawdza czy była choć jedna stacja z przekroczeniem
-    exceed_voiv_day = exceed.groupby(voiv, axis=1).any()
+    exceed_voiv_day = exceed.T.groupby(voiv).any().T
 
     # zlicza liczbe dni z przekroczeniem w każdym roku
     out = exceed_voiv_day.groupby(exceed_voiv_day.index.year).sum()

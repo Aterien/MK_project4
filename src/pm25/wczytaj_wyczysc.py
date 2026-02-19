@@ -156,7 +156,7 @@ def wspolne_stacje(df_list:list[pd.DataFrame]) -> pd.Index:
         """
     wsp = df_list[0].columns
     for df in df_list[1:]:
-        wsp = wsp.intersection(df.columns)
+        wsp = wsp.intersection(df.columns).infer_objects()
     return wsp
 
 def multiindex_funkcja(df:pd.DataFrame, metadane:pd.DataFrame, wsp_stacje:pd.Index) -> pd.DataFrame:
