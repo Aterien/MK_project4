@@ -22,6 +22,7 @@ user_entrez_email = config["user_entrez_email"]
 user_entrez_api_key = config["user_entrez_api_key"]
 queries_list = config["pubmed_queries"]
 retmax = int(config["retmax"])
+max_top_journals_sample_size = config["sample_size"]
 
 publications_per_year = {}
 
@@ -41,3 +42,13 @@ for query in queries_list:
 # Tworzymy tabelę z liczbą publikacji dla wszystkich zapytań za rok
 publications_per_year_df = pd.DataFrame(publications_per_year, index = [year])
 publications_per_year_df.to_csv(f"../../results/literature/{year}/summary_by_year.csv", index=True)
+
+top_journals_df, total_found = top_journals(year = year,
+                               entrez_email = user_entrez_email,
+                               entrez_api_key = user_entrez_api_key,
+                               top = 10,
+                               sample_size=max_top_journals_sample_size)
+top_journals_df.to_csv(f"../../results/literature/{year}/top_journals.csv", index=True)
+
+# Wizualizacja (jedyny wykres, który ma sens przy analizie danych za pojedyńczy rok)
+figure_top_journals_per_year(top_journals_df,f"../../results/literature/{year}/figure_top_journals_per_year.png")
