@@ -1,9 +1,11 @@
 #TODO string co robi ten skrypt
+
 import argparse
 import yaml
 from pathlib import Path
 from pubmed_analysis import *
 
+# W zadaniu było wymagane podanie roku i configu jako argumenty skryptu, a nie przez Snakemake
 # Parsowanie
 parser = argparse.ArgumentParser()
 parser.add_argument("--year", help="Rok do analizy")
@@ -18,8 +20,24 @@ with open(config_file) as f:
 
 user_entrez_email = config["user_entrez_email"]
 user_entrez_api_key = config["user_entrez_api_key"]
-queries_list = config["queries"]
+queries_list = config["pubmed_queries"]
+retmax = int(config["retmax"])
+
+publications_per_year = {}
 
 # Analiza
+for query in queries_list:
+    result_df = search_for_papers(query = query,
+                                  year = year,
+                                  entrez_email= user_entrez_email,
+                                  entrez_api_key = user_entrez_api_key,
+                                  retmax = retmax)
+    result_df.to_csv(f"../../results/literature/{year}/{query.replace(" ","_")}_search_result.csv", index=False)
 
+    # Dodajemy liczbę wyników zapytania
+    publications_per_year[query] = result_df.shape[0]
+    print(f"[pubmed_year][{year}] Wyniki zapytania {query} zapisano do results/literature/{year}/{query.replace(" ","_")}_search_result.csv")
 
+# Tworzymy tabelę z liczbą publikacji dla wszystkich zapytań za rok
+publications_per_year_df = pd.DataFrame(publications_per_year, index = [year])
+publications_per_year_df.to_csv(f"../../results/literature/{year}/summary_by_year.csv", index=True)

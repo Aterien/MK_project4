@@ -4,29 +4,28 @@ import time
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def search_for_papers(query: str, year: int, entrez_email: str, output_file: str, entrez_api_key: str = None, retmax = 1000) -> pd.DataFrame:
+def search_for_papers(query: str, year: int, entrez_email: str, entrez_api_key: str = None, retmax = 1000) -> pd.DataFrame:
     """
-    Searches PubMed for articles matching query and year,
-    fetches their metadata and saves results to a CSV file.
+    Wyszukuje w PubMed artykuły pasujące do zapytania i roku,
+    pobiera ich metadane i zapisuje wyniki w pliku CSV.
 
     Parameters
     ----------
     query : str
-        PubMed search query, e.g. "Lung AND Cancer" or "PM2.5 AND pollution"
+        Zapytanie w wyszukiwarce PubMed, np. "Lung AND Cancer" albo "PM2.5 AND pollution".
     year : int
-        Publication year to filter results.
+        Rok publikacji, aby filtrować wyniki.
     entrez_email : str
-        Email address required by NCBI Entrez API.
-    output_file : str
-        Path to output CSV file.
+        Email addres użytkownika wymagany przez NCBI Entrez API.
     entrez_api_key : str, optional
-        NCBI API key (increases rate limit from 3 to 10 requests/sec).
+        NCBI API key (zwiększa limit szybkości z 3 do 10 żądań/sek.).
+    retmax: int, optional
+        Limit zwracanych wyników dla jednego zapytania. Domyślnie - 1000.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame with columns: PMID, title, year, journal, authors, abstract.
-        Also saved to output_file as CSV.
+        DataFrame zawierający winiki wyszukiwania z kolumnami: PMID, title, year, journal, authors, abstract.
     """
     Entrez.email = entrez_email
     if entrez_api_key:
@@ -47,7 +46,6 @@ def search_for_papers(query: str, year: int, entrez_email: str, output_file: str
     if not pmid_list:
         print(f"[pubmed_year][{year}] Brak wyników dla zapytania: {full_query}")
         empty = pd.DataFrame(columns=["PMID", "title", "year", "journal", "authors", "abstract"])
-        empty.to_csv(output_file, index=False)
         return empty
 
     # Pobieranie metadanych dla znalezionych PMID
@@ -94,12 +92,8 @@ def search_for_papers(query: str, year: int, entrez_email: str, output_file: str
         })
 
     df = pd.DataFrame(rows, columns=["PMID", "title", "year", "journal", "authors", "abstract"])
-    df.to_csv(output_file, index=False)
-    print(f"[pubmed_year][{year}] Zapisano {len(df)} rekordów do {output_file}")
+    print(f"[pubmed_year][{year}] Pomyślnie przeanalizowano zapytanie{query}.")
     return df
-
-def summary_by_year(query, year, entrez_email, entrez_api_key = None):
-    pass
 
 def top_journals(year, entrez_email,entrez_api_key = None, top = 10):
     pass
