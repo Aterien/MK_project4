@@ -1,23 +1,43 @@
 configfile: "workflows/config.yaml"
 
-YEARS = list(config["years"].keys())
+YEARS = list(config["years"].keys()) # w konfigu lata są definiowane jako klucze słownika.
+                                     # Jest to spowodowane koniecznością przekazywania linku do archiwum z danymi pm2.5
+                                     # oraz nazwy pliku surowego w pobranym archiwum osobnie dla każdego roku
 
+QUERIES = config["pubmed_queries"]  # lista zapytany z konfigu. Jej długość jest zmienna
 
 rule all:
+    """
+    wszystkie pliki, których oczekujemy na końcu działania pipeline
+    """
     input:
+        # wyniki analizy pm2.5 ==========================================================
         "data/raw/metadata.xlsx",
         expand("data/raw/pm25_{year}.xlsx", year=YEARS),
         expand("results/pm25/{year}/monthly_means.csv", year=YEARS),
         expand("results/pm25/{year}/monthly_means_by_city.csv", year=YEARS),
         expand("results/pm25/{year}/exceedance_days_by_station.csv", year=YEARS),
         expand("results/pm25/{year}/top3_max_min_stations.csv", year=YEARS),
-        expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS)
+        expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS),
+        # wyniki przeglądu literatury i czasopism ======================================
+        expand( # pliki z wynikami poszukiwania dla wszystkich wskazanych zapytań dla danego roku
+            "results/literature/{year}/{query}_search_result.csv",
+            year=YEARS,
+            query=[q.replace(" ", "_") for q in QUERIES] # Zamieniamy " " na "_" bo zapytania do bazy mogą zawierać spacje
+                                                         # A na linuxie lepiej nie mieć plików ze spacjami.
+        ),
+        expand("results/literature/{year}/summary_by_year.csv", year=YEARS),
+        expand("results/literature/{year}/top_journals.csv", year=YEARS),
+        expand("results/literature/{year}/figure_top_journals_per_year.png", year=YEARS),
+        # wyniki raportu ===============================================================
+        # TODO co ma byc tutaj
 
 
 rule download_metadata:
     """
-    Downloads station metadata from GIOS archive.
-    Output is reused by all per-year analysis rules.
+    Pobiera metadane z archiwum GIOS i zapisuje w pliku .xlsx
+    Output zostaje wielokrotnie użyty przez funkcje w skrypcie z rule pm25_year.
+    Link do strony GIOS oraz ID pliku z metadanymi są brane z pliku config.yaml
     """
     output:
         "data/raw/metadata.xlsx"
@@ -27,9 +47,10 @@ rule download_metadata:
 
 rule download_year:
     """
-    Downloads raw PM2.5 hourly data for a single year.
-    Year is passed via wildcard; archive id and filename
-    are looked up from config.yaml.
+    Pobiera surowe dane PM2,5 z poszczególnych godzin dla jednego roku.
+    Rok jest przekazywany za pomocą wildcard;
+    Rok, link do strony GIOS, ID archiwum i nazwa jednego używanego w analizie pliku z tego archiwum
+    są brane z pliku config.yaml
     """
     output:
         "data/raw/pm25_{year}.xlsx"
@@ -41,7 +62,8 @@ rule download_year:
 
 rule pm25_year:
     """
-    Czyszczenie, analiza i wizualizacja danych
+    Czyszczenie, analiza i wizualizacja danych pm2.5.
+    Rok, wartość dobowej normy PM2.5 oraz listę miast należy wskazać w pliku config.yaml
     """
     input:
         "data/raw/pm25_{year}.xlsx",
@@ -56,3 +78,41 @@ rule pm25_year:
         year="|".join(str(y) for y in YEARS)
     script:
         "../src/pm25/run_pm25_year.py"
+
+rule pubmed_year:
+    """
+    Pobiera dane z PubMed dla podanego roku:
+    - wyniki dla każdego zapytania z config.yaml (pubmed_queries)
+    - summary_by_year.csv
+    - top_journals.csv
+    - figure_top_journals_per_year.png
+    Należy zwrócić uwagę na to, że liczba plików wynikowych zależy od liczby zapytań w konfiguracji.
+
+    Używa skryptu pubmed_fetch.py, który w odróżnieniu od innych skryptów w tym pipeline nie zwraca się do obięktu
+    snakemake, tylko komunikuję ze Snakemake jedynie poprzez argumenty.
+    Jest to wymagane w treści zadania na ile dobrze go rozumiem.
+
+    Rok, wartości retmax, sample_size oraz listę zapytań należy wskazać w pliku config.yaml
+    """
+    output:
+        # Tworzymy tyle osobnych plików .csv ile jest zapytań.
+        # Łączenie tych df moim zdaniem nie ma sensu.
+        query_files=expand(
+            "results/literature/{{year}}/{query}_search_result.csv",
+            query=[q.replace(" ", "_") for q in QUERIES] # Zamieniamy " " na "_" bo zapytania do bazy mogą zawierać spacje
+                                                         # A na linuxie lepiej nie mieć plików ze spacjami.
+        ),
+        # Summary, topjournals, figure - łączą dane ze wszystkich zapytań dla jednego roku.
+        # Tworzymy zatem po jednym pliku wynikowym.
+        summary="results/literature/{year}/summary_by_year.csv",
+        top_journals="results/literature/{year}/top_journals.csv",
+        figure="results/literature/{year}/figure_top_journals_per_year.png"
+    wildcard_constraints:
+        year="|".join(str(y) for y in YEARS)
+    shell:
+        """
+        python src/literature/pubmed_fetch.py \
+            --year {wildcards.year} \
+            --config workflows/config.yaml \
+            --output results/literature
+        """

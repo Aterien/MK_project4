@@ -98,8 +98,7 @@ def search_for_papers(query: str, year: int, entrez_email: str, entrez_api_key: 
     print(f"[pubmed_year][{year}] Pomyślnie przeanalizowano zapytanie{query}.")
     return df
 
-def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: int = 10, sample_size: int = 10000) -> \
-tuple[pd.DataFrame, int]:
+def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: int = 10, sample_size: int = 10000) -> pd.DataFrame:
     """
     Returns top journals by number of publications in PubMed for a given year.
     Based on a sample of up to sample_size records.
@@ -149,7 +148,7 @@ tuple[pd.DataFrame, int]:
     df["total_in_pubmed"] = total_found
 
     print(f"[top_journals] Top {top} journals gotowe.")
-    return df, total_found
+    return df
 
 def figure_top_journals_per_year(top_journals_per_year_df: pd.DataFrame, output_file_name: str) -> None:
     """

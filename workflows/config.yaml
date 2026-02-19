@@ -26,8 +26,13 @@ cities:
 
 # Ustawienia przeglądu publikacji
 user_entrez_email: "m.khrabust@student.uw.edu.pl"
-user_api_key: "cf88f96a609dbbbaa42b355f2793394f2f08" # Może pozostać puste
+user_entrez_api_key: "cf88f96a609dbbbaa42b355f2793394f2f08" # Może pozostać puste
 
-queries:
-  - "Lung cancer"
-  - "Dust particles"
+pubmed_queries:
+  - "PM2.5 AND Poland"
+  - "air pollution AND lung"
+  - "particulate matter AND health"
+
+retmax: 1000
+
+sample_size: 100
