@@ -35,6 +35,7 @@ pubmed_queries:
   - "air pollution AND lung"
   - "particulate matter AND health"
 
-retmax: 1000
+retmax: 1000 # maksymalna liczba zapisywanych rekordów dla zapytania
 
-sample_size: 100
+sample_size: 100 # Maksymalna liczba rekordów, na podstawie których liczona jest statystyka artykułów
+                 # z największą liczba publikacji
