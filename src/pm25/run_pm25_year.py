@@ -22,33 +22,29 @@ metadata = pd.read_excel(metadata_file, engine='openpyxl')
 # Czyszczenie
 print(f"[pm25_year][{year}] Czyszczenie i ujednolicanie danych...")
 data = df_gotowy(raw_df_dict={year: raw_df}, metadane=metadata)
+data.to_csv(snakemake.output[0],index=True)
 print(f"[pm25_year][{year}] Wymiar danych: {data.shape}")
 
 # Analiza
 # Średnie miesięczne
 monthly_means = srednie_miesieczne(data)
-monthly_means.to_csv(snakemake.output[0],index=True)
-print(f"[pm25_year][{year}] Średnie miesięczne po stacjach zapisane do: {snakemake.output[0]}")
+monthly_means.to_csv(snakemake.output[1],index=True)
+print(f"[pm25_year][{year}] Średnie miesięczne po stacjach zapisane do: {snakemake.output[1]}")
 
 # Średnie miesięczne pogrupowane po miastach
 monthly_means_by_city = srednie_po_miastach(monthly_means)
-monthly_means_by_city.to_csv(snakemake.output[1],index=True)
-print(f"[pm25_year][{year}] Średnie miesięczne po miastach zapisane do: {snakemake.output[1]}")
+monthly_means_by_city.to_csv(snakemake.output[2],index=True)
+print(f"[pm25_year][{year}] Średnie miesięczne po miastach zapisane do: {snakemake.output[2]}")
 
 # Liczba dni z przekroczeniem po stacjach
 exceedance_days_by_station = dni_przekroczenia_normy(df_pomiary=data,norma_dobowa = pm25_daily_limit, years=[year])
-exceedance_days_by_station.to_csv(snakemake.output[2],index=True)
-print(f"[pm25_year][{year}] Liczba dni z przekroczeniem po stacjach zapisana do: {snakemake.output[2]}")
-
-# Stacje z największym i najmniejszym przekroczeniem
-top3_max_min_stations, days_over_norm = wybierz_stacje_max_min(ile_dni_wiecej_normy = exceedance_days_by_station, rok = year)
-days_over_norm.to_csv(snakemake.output[3],index=True)
-print(f"[pm25_year][{year}] Stacje z największym i najmniejszym przekroczeniem zapisane do: {snakemake.output[3]}")
+exceedance_days_by_station.to_csv(snakemake.output[3],index=True)
+print(f"[pm25_year][{year}] Liczba dni z przekroczeniem po stacjach zapisana do: {snakemake.output[3]}")
 
 # Liczba dni z przekroczeniem po województwach
 exceedance_days_by_voivodeship = overnorm_by_voivodeship(df = data, metadata=metadata, daily_norm=pm25_daily_limit, years=[year])
 exceedance_days_by_voivodeship.to_csv(snakemake.output[4],index=True)
-print(f"[pm25_year][{year}] Liczba dni z przekroczeniem po województwach zapisana do: {snakemake.output[4]}")
+print(f"[pm25_year][{year}] Liczba dni z przekroczeniem po województwach zapisana do: {snakemake.output[5]}")
 
 # Wizualizacja
 # Jest to jedyny wykres, który jest sens robić dla pojedyńczego roku
