@@ -4,7 +4,9 @@ pm25_data_link: "https://powietrze.gios.gov.pl/pjp/archives/downloadFile/" #link
 metadata_id: "622"
 pm25_daily_limit: "15.0" #Wartość dobowej normy PM2.5, powyżej której dzień uznawany jest za przekroczenie normy
 
-#TODO komentarz jakis
+# Lata są definiowane jako klucze słownika.
+# Jest to spowodowane koniecznością przekazywania linku do archiwum z danymi pm2.5oraz nazwy surowego pliku
+# w pobranym archiwum osobnie dla każdego roku
 years:
   2015:
     archive_id: "236"

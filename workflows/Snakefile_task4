@@ -1,10 +1,10 @@
 configfile: "workflows/config.yaml"
 
-YEARS = list(config["years"].keys()) # w konfigu lata są definiowane jako klucze słownika.
+YEARS = list(config["years"].keys()) # w configu lata są definiowane jako klucze słownika.
                                      # Jest to spowodowane koniecznością przekazywania linku do archiwum z danymi pm2.5
-                                     # oraz nazwy pliku surowego w pobranym archiwum osobnie dla każdego roku
+                                     # oraz nazwy surowego pliku w pobranym archiwum osobnie dla każdego roku
 
-QUERIES = config["pubmed_queries"]  # lista zapytany z konfigu. Jej długość jest zmienna
+QUERIES = config["pubmed_queries"]  # lista zapytany z configu. Jej długość jest zmienna
 
 rule all:
     """

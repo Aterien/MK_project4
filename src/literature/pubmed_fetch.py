@@ -49,13 +49,13 @@ for query in queries_list:
     publications_per_year[query] = result_df.shape[0]
     print(f"[pubmed_year][{year}] Zapisano wyniki zapytania '{query}' -> {out_path}")
 
-# --- Summary ---
+# Summary
 publications_per_year_df = pd.DataFrame(publications_per_year, index=[year])
 summary_path = output_dir / "summary_by_year.csv"
 publications_per_year_df.to_csv(summary_path, index=True)
 print(f"[pubmed_year][{year}] Zapisano summary -> {summary_path}")
 
-# --- Top journals ---
+# Top journals
 top_journals_df = top_journals(
     year=year,
     entrez_email=user_entrez_email,

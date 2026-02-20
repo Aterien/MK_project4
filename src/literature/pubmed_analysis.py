@@ -100,8 +100,12 @@ def search_for_papers(query: str, year: int, entrez_email: str, entrez_api_key: 
 
 def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: int = 10, sample_size: int = 10000) -> pd.DataFrame:
     """
-    Returns top journals by number of publications in PubMed for a given year.
-    Based on a sample of up to sample_size records.
+    Zwraca top najlepszych czasopism według liczby publikacji w pubmed dla danego roku.
+    Działa na podstawie badania relatywnie niewielkiej próbki zawierającej co najwięcej sample_size rekordów
+    wziętych z wyniku wyszukiwania wszystkich publikacji za dany rok.
+    Taka metoda wprowadza pewny bias, ponieważ nie wiadomo, po ile dobrze wybrane rekordy reprezentują cały zbiór wyników
+    za dany rok. Stosowanie takiego uproszczenie jest spowodowane tym, żę pobieranie i analiza wszystkich publikacji,
+    których za dany rok w bazie mogą być miliony, (1 258 053 w 2015 r.) jest bardzo czasochłonne.
 
     Parameters
     ----------
@@ -109,14 +113,17 @@ def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: 
     entrez_email : str
     entrez_api_key : str, optional
     top : int
-        Number of top journals to return.
+        Ile najlepszych czasopism zwrócić
     sample_size : int
-        Max number of records to sample (default 10000).
+        Liczba rekordów w próbce (domyślnie 10000).
 
     Returns
     -------
-    pd.DataFrame with columns: journal, article_count
+    pd.DataFrame z kolumnanmi: journal, article_count, year, sample_size, total_in_pubmed.
+
     """
+
+    #TODO komentarze tu
     Entrez.email = entrez_email
     if entrez_api_key:
         Entrez.api_key = entrez_api_key
@@ -152,14 +159,15 @@ def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: 
 
 def figure_top_journals_per_year(top_journals_per_year_df: pd.DataFrame, output_file_name: str) -> None:
     """
-    Draws a barplot of publication counts for top journals.
+    Rysuje wykres słupkowy liczby publikacji w najlepszych czasopism według liczby publikacji.
 
     Parameters
     ----------
     top_journals_per_year_df : pd.DataFrame
-        DataFrame with columns: journal, article_count (result of top_journals())
+        DataFrame z kolumami: journal, article_count (result of top_journals()). Oczekuje się że będzie to
+        wynik funkcji top_journals.
     output_file_name : str
-        Path to save the figure.
+        Ścieżka do miejsca, gdzie ma być zapisany obrazek z wykresem.
     """
     fig, ax = plt.subplots(figsize=(15, 8))
     max_len = 50
