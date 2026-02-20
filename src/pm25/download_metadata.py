@@ -1,6 +1,5 @@
 """
-Pobiera metadane z archiwum GIOS archive and saves it
-as a local .xlsx file.
+Pobiera metadane z archiwum GIOS archive i zapisuje je do pliku .xlsx.
 
 Wywoływany przez Snakemake rule `download_metadata`.
 Dostaje od snakemake object:
