@@ -5,6 +5,8 @@ YEARS = list(config["years"].keys()) # w configu lata są definiowane jako klucz
                                      # oraz nazwy surowego pliku w pobranym archiwum osobnie dla każdego roku
 
 QUERIES = config["pubmed_queries"]  # lista zapytany z configu. Jej długość jest zmienna
+# Suffix używany w nazwach plików raportowych, np. "2015_2018_2021_2024"
+YEARS_STR = "_".join(str(y) for y in YEARS)
 
 rule all:
     """
@@ -31,7 +33,8 @@ rule all:
         expand("results/literature/{year}/top_journals.csv", year=YEARS),
         expand("results/literature/{year}/figure_top_journals_per_year.png", year=YEARS),
         # wyniki raportu ===============================================================
-        # TODO co ma byc tutaj
+        f"results/raport/monthly_means_by_city_heatmap_{YEARS_STR}.png",
+        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png"
 
 
 rule download_metadata:
@@ -76,8 +79,6 @@ rule pm25_year:
         "results/pm25/{year}/exceedance_days_by_station.csv",
         "results/pm25/{year}/exceedance_days_by_voivodeship.csv",
         "results/pm25/{year}/city_comparison_figure.png"
-
-
     wildcard_constraints:
         year="|".join(str(y) for y in YEARS)
     script:
@@ -120,3 +121,13 @@ rule pubmed_year:
             --config workflows/config.yaml \
             --output results/literature
         """
+
+rule report_task4:
+    input:
+        expand("results/pm25/{year}/monthly_means_by_city.csv", year=YEARS),
+        expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS)
+    output:
+        f"results/raport/monthly_means_by_city_heatmap_{YEARS_STR}.png",
+        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png"
+    script:
+        "../src/report/report_assembly.py"
