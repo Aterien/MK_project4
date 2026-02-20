@@ -34,7 +34,9 @@ rule all:
         expand("results/literature/{year}/figure_top_journals_per_year.png", year=YEARS),
         # wyniki raportu ===============================================================
         f"results/raport/monthly_means_by_city_heatmap_{YEARS_STR}.png",
-        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png"
+        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png",
+        f"results/raport/year_summary_by_queries_{YEARS_STR}.png",
+        f"results/raport/raport_{YEARS_STR}.md"
 
 
 rule download_metadata:
@@ -122,12 +124,45 @@ rule pubmed_year:
             --output results/literature
         """
 
-rule report_task4:
+rule generate_all_year_plots:
+    """
+    Generuje wykresy porównawcze dla wszystkich lat:
+    - heatmapa średnich miesięcznych PM2.5 po miastach
+    - wykres przekroczeń normy dobowej po województwach
+    - wykres liczby publikacji PubMed według zapytania i roku
+    """
     input:
-        expand("results/pm25/{year}/monthly_means_by_city.csv", year=YEARS),
-        expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS)
+        monthly_means_by_city=expand("results/pm25/{year}/monthly_means_by_city.csv", year=YEARS),
+        exceedance_by_voivodeship=expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS),
+        query_summary=expand("results/literature/{year}/summary_by_year.csv", year=YEARS)
     output:
         f"results/raport/monthly_means_by_city_heatmap_{YEARS_STR}.png",
-        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png"
+        f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png",
+        f"results/raport/year_summary_by_queries_{YEARS_STR}.png"
     script:
         "../src/report/report_assembly.py"
+
+
+rule generate_report:
+    """
+    Generuje raport Markdown podsumowujący wyniki analizy PM2.5
+    oraz przeglądu literatury PubMed dla wszystkich lat.
+    """
+    input:
+        city_figures=expand("results/pm25/{year}/city_comparison_figure.png", year=YEARS),
+        heatmap=f"results/raport/monthly_means_by_city_heatmap_{YEARS_STR}.png",
+        voivodeship_plot=f"results/raport/exceedance_days_by_voivodeship_plot_{YEARS_STR}.png",
+        query_summary_plot=f"results/raport/year_summary_by_queries_{YEARS_STR}.png",
+        query_csvs=expand(
+            "results/literature/{year}/{query}_search_result.csv",
+            year=YEARS,
+            query=[q.replace(" ", "_") for q in QUERIES]
+        ),
+        top_journal_figures=expand(
+            "results/literature/{year}/figure_top_journals_per_year.png",
+            year=YEARS
+        )
+    output:
+        f"results/raport/raport_{YEARS_STR}.md"
+    script:
+        "../src/report/generate_report.py"

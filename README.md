@@ -30,3 +30,4 @@
   
   ```
 ### Jak weryfikuję incrementalność piplenie'a
+
