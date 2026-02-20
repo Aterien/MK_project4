@@ -30,4 +30,31 @@
   
   ```
 ### Jak weryfikuję incrementalność piplenie'a
+Sprawdzam, czy wyniki nie są ponownie liczone, jeśli nie jest to konieczne, głównie na podstawie tabeli liczby wykonań reguł generowanej przez snakemake po uruchomienu pipeline'a w trybie suchym lub pełnym. 
+Jeśli ani kod, ani dane w configu nie uległy zmianiom, snakemake zwróci:
+```
+    Building DAG of jobs...
+    Nothing to be done (all requested files are present and up to date).
+```
+Jeśli jednak, zmienimy jeden rok na inny (na przykład 2024 -> 2019),
+to snakemake wypisze:
+```
+    Building DAG of jobs...
+    Job stats:
+    job                        count
+    -----------------------  -------
+    all                            1
+    download_year                  1
+    generate_all_year_plots        1
+    generate_report                1
+    pm25_year                      1
+    pubmed_year                    1
+    total                          6
 
+```
+Zgadza się to z intuicją, po tej zmianie pipeline bedę musiał jedynie:
+- pobrać dane dle tego roku (download_year)
+- przeprowadzić analizę PM2.5 dla tego roku (pm25_year)
+- przeprowadzić przegłąd literatury dla tego roku (pubmed_year)
+- ponownie policzyć statystyki dla wielu lat (generate_all_year_plots)
+- wygenerować nowy raport (generate_report )

@@ -1,6 +1,3 @@
-#TODO opis skryptu
-from typing import Any
-
 from Bio import Entrez
 import time
 import matplotlib.pyplot as plt
@@ -123,7 +120,6 @@ def top_journals(year: int, entrez_email: str, entrez_api_key: str = None, top: 
 
     """
 
-    #TODO komentarze tu
     Entrez.email = entrez_email
     if entrez_api_key:
         Entrez.api_key = entrez_api_key

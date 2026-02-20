@@ -1,5 +1,3 @@
-#TODO string co robi ten skrypt
-
 # Skrypt pobiera dane z PubMed dla podanego roku i zapisuje wyniki do katalogu {output}/{year}/
 # Może być uruchamiany samodzielnie lub przez Snakemake (rule pubmed_year)
 
