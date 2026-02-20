@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:list[str]) -> None:
+def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:list[str],output_file_name:str) -> None:
     """
     Rysuje wykres porównujący średnie miesięczne stężenia PM2.5
     dla wybranych miast i lat.
@@ -25,6 +25,8 @@ def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:l
         Lista lat, które mają zostać uwzględnione na wykresie.
     miasta : list of str
         Lista nazw miejscowości, dla których mają zostać narysowane wykresy.
+    output_file_name: str
+        Miejsce, w którym zostanie zapisany obraz z wykresem
 
     Returns
     -------
@@ -41,13 +43,15 @@ def wykres_porownanie_miast(srednie_miast:pd.DataFrame, lata:list[int], miasta:l
 
     plt.xlabel('Miesiąc')
     plt.ylabel('Średnia wartość PM2.5')
-    plt.title('Średnie miesięczne stężenie PM2.5 w Katowicach i Warszawie')
+    plt.title('Średnie miesięczne stężenie PM2.5 w wybranych miastach')
     plt.xticks(range(1,13))
     plt.grid(True)
     plt.legend()
     plt.show()
+    plt.savefig(output_file_name)
+    plt.close()
 
-def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) -> None:
+def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int],output_file_name:str) -> None:
     """
     Rysuje zestaw wykresów typu heatmap przedstawiających
     średnie miesięczne stężenia PM2.5 dla wszystkich miejscowości.
@@ -72,6 +76,8 @@ def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) ->
         po miejscowościach (wynik funkcji srednie_po_miastach).
     lata : list of int
         Lista lat uwzględnianych na wykresach.
+    output_file_name: str
+        Miejsce, w którym zostanie zapisany obraz z wykresem
 
     Returns
     -------
@@ -99,8 +105,10 @@ def wykres_heatmap_srednie(srednie_po_miejscach:pd.DataFrame, lata:list[int]) ->
         fig.colorbar(hm, ax=axes[y][x], fraction=0.046, pad=0.04)
     fig.tight_layout(rect=[0, 0, 1, 0.98])
     plt.show()
+    plt.savefig(output_file_name)
+    plt.close()
 
-def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:list[str], lata:list[int], norma_dobowa:float) -> None:
+def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:list[str], lata:list[int], norma_dobowa:float, output_file_name:str) -> None:
     """
     Rysuje wykres słupkowy liczby dni z przekroczeniem normy PM2.5
     dla wybranych stacji i lat.
@@ -124,6 +132,8 @@ def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:lis
     norma_dobowa : float
         Wartość dobowej normy PM2.5 użytej do obliczeń,
         wyświetlana w tytule wykresu.
+    output_file_name: str
+        Miejsce, w którym zostanie zapisany obraz z wykresem
 
     Returns
     -------
@@ -143,14 +153,19 @@ def wykres_przekroczenia(ile_dni_wybrane_stacje:pd.DataFrame, wybrane_stacje:lis
     plt.legend()
     plt.title(f"Liczba dni z przekroczeniem normy dobowej = {norma_dobowa} µg/m³")
     plt.grid(True)
+    plt.show()
+    plt.savefig(output_file_name)
+    plt.close()
 
-def plot_exceedence_by_voivodeship(df: pd.DataFrame, daily_norm: float) -> None:
+def plot_exceedence_by_voivodeship(df: pd.DataFrame, daily_norm: float, output_file_name:str) -> None:
     """
     Bar chart plotting number of days with PM2.5 exceedance by voivodeship.
     --------
     Parameters
         df: data frame with exceedance days grouped by voivodeship
         daily norm: threshold of daily norm of PM2.5 value
+    output_file_name: str
+        Location of a file to save the plot to.
     --------
     Returns
     None
@@ -167,3 +182,5 @@ def plot_exceedence_by_voivodeship(df: pd.DataFrame, daily_norm: float) -> None:
     plt.xticks(rotation=0)
     plt.tight_layout()
     plt.show()
+    plt.savefig(output_file_name)
+    plt.close()
