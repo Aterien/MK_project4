@@ -11,6 +11,7 @@ year_raw_data = snakemake.input[0]
 config = snakemake.config
 metadata_file = snakemake.input[1]
 pm25_daily_limit = float(config["pm25_daily_limit"])
+cities = config["cities"]
 
 # Wczytywanie
 print(f"[pm25_year][{year}] Wczytywanie danych surowych z {year_raw_data}...")
@@ -48,5 +49,10 @@ print(f"[pm25_year][{year}] Stacje z największym i najmniejszym przekroczeniem 
 exceedance_days_by_voivodeship = overnorm_by_voivodeship(df = data, metadata=metadata, daily_norm=pm25_daily_limit, years=[year])
 exceedance_days_by_voivodeship.to_csv(snakemake.output[4],index=True)
 print(f"[pm25_year][{year}] Liczba dni z przekroczeniem po województwach zapisana do: {snakemake.output[4]}")
+
+# Wizualizacja
+# Jest to jedyny wykres, który jest sens robić dla pojedyńczego roku
+# Pozostałe 3 wykresy dotyczące PM2.5 rysowane są na etapie składania raportu
+wykres_porownanie_miast(srednie_miast=monthly_means_by_city,lata = [year],miasta=cities,output_file_name=snakemake.output[5],show=False)
 
 print(f"[pm25_year][{year}] Analiza zakończona.\n\n\n")

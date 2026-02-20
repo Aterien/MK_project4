@@ -19,6 +19,7 @@ rule all:
         expand("results/pm25/{year}/exceedance_days_by_station.csv", year=YEARS),
         expand("results/pm25/{year}/top3_max_min_stations.csv", year=YEARS),
         expand("results/pm25/{year}/exceedance_days_by_voivodeship.csv", year=YEARS),
+        expand("results/pm25/{year}/city_comparison_figure.png", year=YEARS),
         # wyniki przeglądu literatury i czasopism ======================================
         expand( # pliki z wynikami poszukiwania dla wszystkich wskazanych zapytań dla danego roku
             "results/literature/{year}/{query}_search_result.csv",
@@ -73,7 +74,9 @@ rule pm25_year:
         "results/pm25/{year}/monthly_means_by_city.csv",
         "results/pm25/{year}/exceedance_days_by_station.csv",
         "results/pm25/{year}/top3_max_min_stations.csv",
-        "results/pm25/{year}/exceedance_days_by_voivodeship.csv"
+        "results/pm25/{year}/exceedance_days_by_voivodeship.csv",
+        "results/pm25/{year}/city_comparison_figure.png"
+
     wildcard_constraints:
         year="|".join(str(y) for y in YEARS)
     script:
